@@ -2112,7 +2112,34 @@
 
                 <!-- ==================== BOARD 3: Z-SCORE & FINAL EXAM SIMULATOR ==================== -->
                 <div class="tab-pane" id="pane-zscore">
-                    <div class="section-headline">
+                    <div class="univ-analysis-section" id="remain-sim-box" style="border:1.5px solid #0284c7; background:#f0f9ff; margin-bottom:16px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+                            <strong style="color:#0369a1; font-size:13.5px;">🎯 남은 학기 시뮬레이터 · 목표 평균 역산</strong>
+                            <span id="rs-now" style="font-size:12px; font-weight:800; color:#334155;"></span>
+                        </div>
+                        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:12px; margin-top:10px; font-size:12px;">
+                            <div>
+                                <div style="font-weight:800; color:#0f172a; margin-bottom:4px;">① 남은 학기에 이 정도 받으면 → 최종 평균</div>
+                                <div style="display:flex; justify-content:space-between;"><span>남은 학기 평균 등급</span><strong id="rs-lbl-rem">1.00</strong></div>
+                                <input type="range" id="rs-rem" min="1" max="3" step="0.05" value="1" oninput="renderRemainSim()">
+                                <div style="display:flex; gap:6px; align-items:center; margin-top:4px;">
+                                    <span>남은 학기</span><input type="number" id="rs-sems" min="0" max="4" step="1" style="width:52px;" oninput="renderRemainSim()"><span>개 · 학기당</span><input type="number" id="rs-units" min="1" max="40" step="1" style="width:56px;" oninput="renderRemainSim()"><span>학점</span>
+                                </div>
+                                <div id="rs-out1" style="margin-top:6px; line-height:1.6;"></div>
+                            </div>
+                            <div>
+                                <div style="font-weight:800; color:#0f172a; margin-bottom:4px;">② 최종 목표 평균 → 남은 학기에 필요한 평균</div>
+                                <div style="display:flex; gap:6px; align-items:center;"><span>목표 평균</span><input type="number" id="rs-target" min="1" max="5" step="0.01" value="1.04" style="width:72px;" oninput="renderRemainSim()"></div>
+                                <div id="rs-out2" style="margin-top:6px; line-height:1.6;"></div>
+                            </div>
+                        </div>
+                        <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;">
+                            <button type="button" class="btn" onclick="applyRemainSim()" style="padding:5px 11px; font-size:11.5px;">① 최종 평균으로 추천 대학 보기</button>
+                            <button type="button" class="btn" onclick="applySubjectsToMainScore(); renderRemainSim(); showToast('현재 성적표 평균으로 되돌렸습니다.')" style="padding:5px 11px; font-size:11.5px;">현재 성적으로 되돌리기</button>
+                        </div>
+                        <div style="font-size:10.5px; color:#64748b; margin-top:6px;">수시는 3학년 1학기까지 5개 학기를 반영한다고 보고 계산합니다(학점 가중). 남은 학기 학점은 지금까지 학기당 평균 학점으로 채워 두었으니 실제 시간표에 맞게 고치세요. 대학마다 반영 과목·학기 비율이 달라 실제 반영 평균과는 차이가 날 수 있습니다.</div>
+                    </div>
+                                        <div class="section-headline">
                         <span id="zscore-board-headline">📈 과목별 Z점수(원점수·평균·표준편차 — 표준편차 없으면 추정) &amp; 기말고사 시뮬레이터</span>
                         <span style="font-size:12px; color:#34d399;">성적표 업로드 또는 과목 입력 시 자동 계산</span>
                     </div>
@@ -3897,6 +3924,7 @@
             }
             renderFinder("susi"); renderFinder("jeongsi");
             renderCourseCheck();
+            renderRemainSim();
             refreshPrintReportIfOpen();
         }
 
@@ -4040,6 +4068,50 @@
             const coreDone = t.core.filter(n => courseTaken(n) || plannedCourses.includes(n)).length;
             document.getElementById("course-check-badge").innerText = `핵심 ${coreDone} / ${t.core.length} (이수·예정 포함)`;
             body.innerHTML = `<div style="font-weight:800; color:#6d28d9;">핵심</div>${t.core.map(n => row(n, true)).join("")}<div style="font-weight:800; color:#6d28d9; margin-top:6px;">함께 보면 좋은 과목</div>${t.plus.map(n => row(n, false)).join("")}`;
+        }
+
+
+        // ───────── 남은 학기 시뮬레이터 · 목표 평균 역산 ─────────
+        let rsTouched = false;
+        function remainBase() {
+            const sems = {}; let u = 0, w = 0;
+            (studentSubjects || []).forEach(s => { const g = Number(s.grade), un = Number(s.unit) || 0; if (s.grade == null || s.grade === "" || !(g > 0) || !(un > 0)) return; const k = (Number(s.year) || 1) + "-" + (Number(s.term) || 1); sems[k] = (sems[k] || 0) + un; u += un; w += g * un; });
+            const n = Object.keys(sems).length;
+            return { n, units: u, avg: u ? w / u : null, perSem: n ? Math.round(u / n) : 25 };
+        }
+        function renderRemainSim() {
+            const box = document.getElementById("remain-sim-box"); if (!box) return;
+            const b = remainBase();
+            const semEl = document.getElementById("rs-sems"), unitEl = document.getElementById("rs-units");
+            if (!rsTouched || document.activeElement !== semEl && document.activeElement !== unitEl) {
+                if (!rsTouched) { semEl.value = Math.max(0, 5 - b.n); unitEl.value = b.perSem; }
+            }
+            if (document.activeElement === semEl || document.activeElement === unitEl) rsTouched = true;
+            const now = document.getElementById("rs-now"), o1 = document.getElementById("rs-out1"), o2 = document.getElementById("rs-out2");
+            if (b.avg === null) { now.innerText = "성적표(과목별 등급)를 올리면 계산합니다"; o1.innerHTML = ""; o2.innerHTML = ""; return; }
+            now.innerText = `지금까지 ${b.n}개 학기 · ${b.units}학점 · 평균 ${b.avg.toFixed(3)}`;
+            const rs = Math.max(0, parseInt(semEl.value, 10) || 0), ru = Math.max(0, parseFloat(unitEl.value) || 0), remU = rs * ru;
+            const rem = parseFloat(document.getElementById("rs-rem").value);
+            document.getElementById("rs-lbl-rem").innerText = rem.toFixed(2) + "등급";
+            const fin = remU ? (b.avg * b.units + rem * remU) / (b.units + remU) : b.avg;
+            box.dataset.final = fin.toFixed(3);
+            const c9 = conv5to9(fin, CONV_5TO9_MULTI);
+            o1.innerHTML = `남은 ${rs}개 학기(${remU}학점)를 평균 <strong>${rem.toFixed(2)}</strong>로 받으면 → 최종 <strong style="font-size:15px; color:#0369a1;">${fin.toFixed(3)}</strong> <span style="color:#64748b;">(9등급 환산 약 ${c9.toFixed(2)})</span>`;
+            const tg = parseFloat(document.getElementById("rs-target").value);
+            if (!isFinite(tg)) { o2.innerHTML = ""; return; }
+            if (!remU) { o2.innerHTML = "남은 학기가 0이라 더 바꿀 수 없습니다."; return; }
+            const need = (tg * (b.units + remU) - b.avg * b.units) / remU;
+            let msg;
+            if (need < 1) msg = `<strong style="color:#b91c1c;">불가능</strong> — 남은 학기를 전부 1등급(1.00)으로 받아도 최종 ${((b.avg * b.units + remU) / (b.units + remU)).toFixed(3)}입니다.`;
+            else if (need > 5) msg = `남은 학기를 아무리 낮게 받아도 ${tg.toFixed(2)}보다 좋습니다.`;
+            else { const ones = Math.round(remU * (need - 1)); msg = `남은 학기 평균 <strong style="font-size:15px; color:#0369a1;">${need.toFixed(3)}</strong> 이내가 필요합니다${need < 1.2 ? ` <span style="color:#64748b;">(${remU}학점 중 2등급 허용은 약 ${Math.max(0, Math.floor(remU * (need - 1)))}학점 = 4학점 과목 ${Math.floor(Math.max(0, remU * (need - 1)) / 4)}개 정도)</span>` : ""}.`; }
+            o2.innerHTML = msg;
+        }
+        function applyRemainSim() {
+            const box = document.getElementById("remain-sim-box"); const v = box ? parseFloat(box.dataset.final) : NaN;
+            if (!isFinite(v)) { showToast("성적표를 먼저 올려 주세요."); return; }
+            setGpaExact(Number(v.toFixed(2)));
+            showToast(`최종 평균 ${v.toFixed(2)}로 수시·정시 추천을 다시 계산했습니다. [현재 성적으로 되돌리기]로 돌아갈 수 있습니다.`);
         }
 
         function getPickedSusi6(evalList, stArg) {
