@@ -1937,11 +1937,11 @@
                             </label>
                             <label for="conv-mode-2" class="conv-option lbl-conv-2" onclick="setConvMode(2)">
                                 <div class="opt-title"><span>② 9등급 다학기 누적 환산 모델</span><span style="color:#34d399;">누적비율 기반</span></div>
-                                <div class="opt-desc">부산진로진학지원센터 실측 + 다학기 누적 환산표 비교</div>
+                                <div class="opt-desc">졸업 시점(5학기) 누적 추정: 1.00 = 9등급 1.25 (센터 추정 1.22~1.38) — 1·2학기 실측보다 유리</div>
                             </label>
                             <label for="conv-mode-3" class="conv-option lbl-conv-3" onclick="setConvMode(3)">
-                                <div class="opt-title"><span>③ 1학기 실측 보수 환산 모델</span><span style="color:#fbbf24;">보수적 하한</span></div>
-                                <div class="opt-desc">1학기 실측값 그대로(5등급 1.00 = 9등급 1.64) 보수 비교</div>
+                                <div class="opt-title"><span>③ 1·2학기 누적 실측 모델</span><span style="color:#fbbf24;">보수적 하한</span></div>
+                                <div class="opt-desc">부산교육청 2026.2 실측(고1 14,331명): 1.00 = 상위 1.30% = 9등급 1.45 — 학기가 더 쌓이면 이보다 유리해짐</div>
                             </label>
                         </div>
                     </div>
@@ -2593,8 +2593,8 @@
                 <p>2028학년도 5등급 추정컷은 각 대학 <strong>2027 어디가 70%컷(9등급)</strong>을 아래 환산표로 바꾼 값입니다. 5등급제 실제 입결은 2028 입시가 끝나야 나오므로 모든 값은 <strong>추정치</strong>입니다.</p>
                 <div style="background:#1e293b; padding:12px 14px; border-radius:8px; margin:10px 0; overflow-x:auto;">
                     <p style="margin-bottom:6px;"><strong style="color:#00f0ff;">5등급 평균 → 9등급 평균 환산표</strong></p>
-                    <table class="univ-table" style="min-width:320px; font-size:11.5px;"><thead><tr><th>5등급 평균</th><th>①② 다학기 누적 기준</th><th>③ 1학기 실측(보수)</th></tr></thead><tbody><tr><td>1.00</td><td>1.25</td><td>1.64</td></tr><tr><td>1.20</td><td>1.70</td><td>1.98</td></tr><tr><td>1.50</td><td>2.38</td><td>2.48</td></tr><tr><td>2.00</td><td>3.40</td><td>3.44</td></tr><tr><td>2.50</td><td>4.20</td><td>4.22</td></tr><tr><td>3.00</td><td>5.00</td><td>5.00</td></tr><tr><td>3.50</td><td>5.85</td><td>5.85</td></tr><tr><td>4.00</td><td>6.80</td><td>6.80</td></tr></tbody></table>
-                    <p style="margin-top:8px; color:#94a3b8; font-size:11px;">근거: 부산진로진학지원센터가 2025년 부산 고1 13,553명의 1학기 성적을 분석한 결과 5등급 평균 1.50·2.00·2.50이 9등급 2.48·3.44·4.22에 해당했고, 1.00을 5학기 내내 유지하면 9등급 1.22~1.38로 추정했습니다. 대학별 환산 예시(종로학원: 9등급 2.58 → 5등급 1.6, 3.29 → 2.0)와도 ±0.1 안에서 맞습니다. 3.0 이상 구간은 누적비율 대칭으로 이어 붙였습니다.</p>
+                    <table class="univ-table" style="min-width:320px; font-size:11.5px;"><thead><tr><th>5등급 평균</th><th>①② 5학기 누적 추정</th><th>③ 1·2학기 누적 실측</th><th>참고: 1학기만 실측</th></tr></thead><tbody><tr><td>1.00</td><td>1.25</td><td>1.45</td><td>1.64</td></tr><tr><td>1.20</td><td>1.70</td><td>1.85</td><td>1.98</td></tr><tr><td>1.50</td><td>2.38</td><td>2.45</td><td>2.48</td></tr><tr><td>2.00</td><td>3.35</td><td>3.35</td><td>3.44</td></tr><tr><td>2.50</td><td>4.20</td><td>4.20</td><td>4.22</td></tr><tr><td>3.00</td><td>5.00</td><td>5.00</td><td>5.00</td></tr><tr><td>3.50</td><td>5.85</td><td>5.85</td><td>5.85</td></tr><tr><td>4.00</td><td>6.80</td><td>6.80</td><td>6.80</td></tr></tbody></table>
+                    <p style="margin-top:8px; color:#94a3b8; font-size:11px;">근거: 부산진로진학지원센터 — ① 2025.8 발표: 고1 13,553명 <strong>1학기</strong> 실측 1.00(상위 2.07%)=9등급 1.64, 1.5=2.48, 2.0=3.44, 2.5=4.22 · ② 2026.2 발표: 고1 14,331명 <strong>1·2학기 누적</strong> 실측 1.00(상위 1.30%)=9등급 1.45, 1.5=2.45, 2.0=3.35, 2.5=4.20 · 1.00을 5학기 내내 유지하면 9등급 1.22~1.38로 추정. 학기가 쌓일수록 전 과목 1등급 비율이 줄어 같은 5등급 평균이 더 좋은 9등급에 해당합니다(1학기 2.07% → 2학기 1.30% → 3학년 1학기 예상 0.3~0.6%). 그래서 ③은 지금까지 나온 가장 최근 실측(1·2학기)을 '보수적 하한'으로, ②는 졸업 시점 추정을 '기준'으로 씁니다. 대학별 환산 예시(종로학원: 9등급 2.58 → 5등급 1.6, 3.29 → 2.0)와도 ±0.1 안에서 맞습니다. 3.0 이상 구간은 누적비율 대칭으로 이어 붙였습니다.</p>
                 </div>
                 <div style="background:#1e293b; padding:12px 14px; border-radius:8px; margin:10px 0;">
                     <p>• <strong>지원 불가능 대학 자동 제외:</strong> 입력된 내신 등급과 모의고사 등급으로 수능최저를 충족하지 못하거나 자체 모형 적합도가 50 미만인 대학은 3단 매트릭스와 비교표에서 자동으로 제외됩니다.</p>
@@ -2930,9 +2930,11 @@
             return 9;
         }
 
-        // 5등급 ↔ 9등급 환산표 (구간 선형보간). 근거: 부산진로진학지원센터 2025 고1 1학기 실측(13,553명) + 누적비율 매칭
-        const CONV_5TO9_MULTI = [[1.0,1.25],[1.2,1.7],[1.4,2.15],[1.6,2.6],[2.0,3.4],[2.5,4.2],[3.0,5.0],[3.5,5.85],[4.0,6.8],[5.0,8.6]];
-        const CONV_5TO9_SINGLE = [[1.0,1.64],[1.5,2.48],[2.0,3.44],[2.5,4.22],[3.0,5.0],[3.5,5.85],[4.0,6.8],[5.0,8.6]];
+        // 5등급 ↔ 9등급 환산표 (구간 선형보간). 근거: 부산진로진학지원센터 고1 1학기(13,553명)·1·2학기 누적(14,331명) 실측 + 5학기 추정
+        const CONV_5TO9_MULTI = [[1.0,1.25],[1.2,1.7],[1.4,2.15],[1.6,2.6],[2.0,3.35],[2.5,4.2],[3.0,5.0],[3.5,5.85],[4.0,6.8],[5.0,8.6]];
+        // ③ 보수: 부산교육청 진로진학지원센터 2026.2 발표 — 2025 고1 14,331명 '1·2학기 누적' 실측 (1.00=상위 1.30% → 9등급 1.45, 1.5→2.45, 2.0→3.35, 2.5→4.20)
+        //    (예전 ③은 1학기만 본 실측 1.00→1.64였는데, 학기가 쌓일수록 1.00 비율이 줄어 실제보다 불리하게 나와 교체)
+        const CONV_5TO9_SEM2 = [[1.0,1.45],[1.5,2.45],[2.0,3.35],[2.5,4.20],[3.0,5.0],[3.5,5.85],[4.0,6.8],[5.0,8.6]];
         function conv5to9(g, table) {
             const t = table || CONV_5TO9_MULTI, x = Math.max(1, Math.min(5, Number(g) || 1));
             for (let i = 1; i < t.length; i++) if (x <= t[i][0]) return t[i - 1][1] + (x - t[i - 1][0]) * (t[i][1] - t[i - 1][1]) / (t[i][0] - t[i - 1][0]);
@@ -3537,15 +3539,15 @@
             // 5등급 평균 → 9등급 평균 추정 (누적비율 매칭)
             //  ①② 다학기 누적 기준: 부산진로진학지원센터 실측(1.5→2.48, 2.0→3.44, 2.5→4.22)과
             //     5학기 1.00 유지 학생 추정(9등급 1.22~1.38)을 이은 표
-            //  ③ 보수 기준: 같은 센터의 1학기 실측값 그대로(1.00→1.64)
-            const conv9 = conv5to9(gpa, currentConvMode === 3 ? CONV_5TO9_SINGLE : CONV_5TO9_MULTI);
+            //  ③ 보수 기준: 같은 센터의 1·2학기 누적 실측(1.00→1.45)
+            const conv9 = conv5to9(gpa, currentConvMode === 3 ? CONV_5TO9_SEM2 : CONV_5TO9_MULTI);
 
             return {
                 gpa, qualAvg, acad, career, comm, qualEvaluated,
                 kor, math, eng, t1, t2, hist,
                 pKor, pMath, pTam1, pTam2, pTamBest, pAvg,
                 conv9,
-                conv9Range: { opt: 1.24 + (Math.max(1, gpa) - 1.00) * 1.20, base: conv5to9(gpa, CONV_5TO9_MULTI), cons: conv5to9(gpa, CONV_5TO9_SINGLE) }
+                conv9Range: { opt: 1.24 + (Math.max(1, gpa) - 1.00) * 1.20, base: conv5to9(gpa, CONV_5TO9_MULTI), cons: conv5to9(gpa, CONV_5TO9_SEM2) }
             };
         }
 
@@ -3602,9 +3604,7 @@
             const spec = getUnivSusiSpec(u);
 
             // 어디가(adiga.kr) 기준 50%컷(최초합 평균선) · 70%컷(최종합격 70%선) · 예상 충원율(%) 산출 (선택된 환산 모델 반영)
-            const cut70_5g = (currentConvMode === 3 && typeof cut9to5Single === "function")
-                ? Number(cut9to5Single(u.cut2027_9g).toFixed(2))
-                : u.cut2028_5g;
+            const cut70_5g = u.cut2028_5g;
             const cut50Delta = u.isComp
                 ? Math.min(0.07, Math.max(0.02, (cut70_5g - 1.00) * 0.18))
                 : Math.min(0.05, Math.max(0.01, (cut70_5g - 1.00) * 0.14));
@@ -3644,7 +3644,7 @@
 
             // 2) 칸형 9칸 안정도 모델 (35% 가중치): 모의고사 보정까지 모두 합산한 최종 jinhakProb 기준으로 kan(칸수)을 일치 판정
             let jinhakGap = 0;
-            const effConv9 = conv5to9(effUnivGpa, currentConvMode === 3 ? CONV_5TO9_SINGLE : CONV_5TO9_MULTI);
+            const effConv9 = conv5to9(effUnivGpa, currentConvMode === 3 ? CONV_5TO9_SEM2 : CONV_5TO9_MULTI);
             if (currentConvMode === 1) {
                 const jEff5 = Math.max(1.00, effUnivGpa - (st.qualAvg - 4.0) * ((u.zW || 0.035) * 0.80));
                 jinhakGap = cut70_5g - jEff5;
@@ -4183,13 +4183,6 @@
         // =========================================================================
         const TIER_KO = { safe: "안정", target: "적정", reach: "소신", impossible: "지원 어려움" };
         const OLD_LINEAR_9 = (g) => 1.24 + (Math.max(1, g) - 1.00) * 1.20;   // 이전 버전 환산식(낙관)
-        function cut9to5Single(g9) {   // 1학기 실측 표의 역함수 (보수)
-            const t = CONV_5TO9_SINGLE.map(([a, b]) => [b, a]);
-            const x = Math.max(1, Math.min(9, g9));
-            if (x <= t[0][0]) return 1.00;
-            for (let i = 1; i < t.length; i++) if (x <= t[i][0]) return t[i - 1][1] + (x - t[i - 1][0]) * (t[i][1] - t[i - 1][1]) / (t[i][0] - t[i - 1][0]);
-            return 5;
-        }
         function ddScenarios(base, st) {
             const raw = UNIV_DB_JS.find(x => x.id === base.id) || base;
             const u = Object.assign({}, raw, { univ: base.univ, note: base.note });
@@ -4201,7 +4194,7 @@
             return [
                 mk("낙관", "이전 버전 추정컷·환산식", u.cutPrev5g != null ? u.cutPrev5g : u.cut2028_5g, OLD_LINEAR_9),
                 mk("기준", "누적비율 환산표 (현재 적용)", u.cut2028_5g, (g) => conv5to9(g, CONV_5TO9_MULTI)),
-                mk("보수", "1학기 실측 환산표", cut9to5Single(u.cut2027_9g), (g) => conv5to9(g, CONV_5TO9_SINGLE))
+                mk("보수", "1·2학기 누적 실측 환산표", u.cut2028_5g, (g) => conv5to9(g, CONV_5TO9_SEM2))
             ];
         }
         // 내신을 바꿔 가며 판정이 바뀌는 경계 찾기 (기준 시나리오)
@@ -4211,7 +4204,7 @@
             const out = { safe: null, target: null, reach: null }, pts = [];
             for (let g = 1.00; g <= 5.0001; g += 0.01) {
                 const gg = Math.round(g * 100) / 100;
-                const st2 = Object.assign({}, st, { gpa: gg, conv9: conv5to9(gg, currentConvMode === 3 ? CONV_5TO9_SINGLE : CONV_5TO9_MULTI) });
+                const st2 = Object.assign({}, st, { gpa: gg, conv9: conv5to9(gg, currentConvMode === 3 ? CONV_5TO9_SEM2 : CONV_5TO9_MULTI) });
                 const it = evaluateUniversityItem(u, st2);
                 if (it.prob >= 82 && it.csat.pass) out.safe = gg;
                 if (it.prob >= 66 && it.csat.pass) out.target = gg;
