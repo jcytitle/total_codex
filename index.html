@@ -1543,8 +1543,11 @@
         #nojs-banner { background: #fff7ed !important; color: #7c2d12 !important; border-bottom-color: #fb923c !important; }
         .dd-marker { background: #0f172a !important; box-shadow: 0 0 0 1.5px #ffffff !important; }
         .dd-marker span { color: #0f172a !important; background: #e0f2fe !important; border: 1px solid #0284c7 !important; padding: 1px 5px !important; border-radius: 4px !important; }
+            .cur-only-badge { display:inline-block; font-size:10px; font-weight:800; padding:1px 6px; margin-left:4px; border-radius:6px; background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; vertical-align:middle; white-space:nowrap; }
+        #policy-panel select { padding:5px 6px; border-radius:6px; border:1px solid #94a3b8; font-size:12px; font-weight:700; max-width:100%; }
+        #policy-panel .pp-col { background:rgba(255,255,255,.55); border:1px solid #cbd5e1; border-radius:8px; padding:9px 10px; font-size:11.5px; line-height:1.55; }
+        #policy-panel .pp-h { font-weight:800; font-size:12px; margin-bottom:5px; }
     </style>
-
 
 
 
@@ -1579,7 +1582,7 @@
                 <div class="brand-logo" style="background: linear-gradient(135deg, #10b981, #0284c7);">T</div>
                 <div class="brand-title">
                     TOTAL CODEX
-                    <span class="brand-tag" id="header-student-tag">v15 · 263개 전형·257개 모집단위 · 전형요소 + 자체 추정 모형 · 화이트</span>
+                    <span class="brand-tag" id="header-student-tag">v16 · 263개 전형 + 정시 재학생 전용 10 · 자료 업데이트 · 화이트</span>
                 </div>
             </div>
 
@@ -1918,6 +1921,44 @@
                             <button type="button" class="track-chip" id="chip-NATURAL" onclick="setTrackFilter('NATURAL')">🔬 자연과학·화생</button>
                             <button type="button" class="track-chip" id="chip-MEDICAL" onclick="setTrackFilter('MEDICAL')">🩺 의약학·메디컬·간호</button>
                             <button type="button" class="track-chip" id="chip-FREE" onclick="setTrackFilter('FREE')">🧭 자율전공·무전공</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2028 재학생 전용 · N수 유입 가정 · 입시 자료 기준일 -->
+                <div id="policy-panel" style="background:rgba(14,165,233,.07); border:1px solid #7dd3fc; border-radius:10px; padding:11px 13px; margin:0 0 14px;">
+                    <div style="font-weight:800; color:#0369a1; font-size:12.5px; margin-bottom:8px;">🎓 지원자 신분 · N수 유입 가정 · 입시 자료 기준일</div>
+                    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:8px;">
+                        <div class="pp-col">
+                            <div class="pp-h">지원자 신분</div>
+                            <select class="js-applicant-sel" id="sel-applicant" onchange="setApplicantMode(this.value)" aria-label="지원자 신분">
+                                <option value="ALL">재학생(2028.2 졸업예정) — 전체 전형</option>
+                                <option value="CURONLY">재학생 전용 전형만 보기</option>
+                                <option value="GRAD">졸업생(N수) — 재학생 전용 제외</option>
+                            </select>
+                            <div id="policy-applicant-info" style="margin-top:5px;"></div>
+                            <div style="color:#64748b; margin-top:3px;">🎓 표시는 2028 시행계획·보도로 졸업예정자만 지원할 수 있다고 확인된 전형입니다. 2027 입결에는 N수 합격자도 들어 있어 합격선 숫자는 따로 고치지 않았습니다.</div>
+                        </div>
+                        <div class="pp-col">
+                            <div class="pp-h">N수 유입 스트레스 테스트 <span style="font-weight:700; color:#b45309;">(가정)</span></div>
+                            <select class="js-nsu-sel" id="sel-nsu" onchange="setNsuLevel(this.value)" aria-label="N수 유입 가정">
+                                <option value="0">없음 — 학평 성적 그대로</option>
+                                <option value="1">보통 — 상위 누적비율 ×1.25</option>
+                                <option value="2">강함 — 상위 누적비율 ×1.5</option>
+                            </select>
+                            <div id="nsu-result" style="margin-top:5px;"></div>
+                            <div style="color:#64748b; margin-top:3px;">학평은 재학생만 치르지만 수능은 졸업생·검정고시가 35.6%입니다(2027 수능 지원자, 평가원 2026.9.8). 국어·수학·탐구 백분위를 '100 − (100 − 백분위) × 배율'로 낮춰 수능최저와 정시를 다시 판정합니다. 영어·한국사(절대평가)는 그대로. 배율은 실측이 아닌 가정이며, N수생이 함께 치른 6·9월 모평 성적이면 '없음'을 쓰세요.</div>
+                        </div>
+                        <div class="pp-col">
+                            <div class="pp-h">입시 자료 업데이트</div>
+                            <div id="data-asof"></div>
+                            <div style="display:flex; flex-wrap:wrap; gap:5px; margin-top:6px;">
+                                <label class="btn file-upload-btn" style="padding:4px 10px; font-size:11px;">📥 업데이트 파일(.json) 불러오기<input type="file" accept="application/json,.json" onchange="importDataUpdate(event)" style="display:none;"></label>
+                                <button type="button" class="btn" onclick="downloadDataTemplate()" style="padding:4px 10px; font-size:11px;">📄 양식 받기</button>
+                                <button type="button" class="btn" id="data-reset-btn" onclick="resetDataUpdates()" style="padding:4px 10px; font-size:11px;">↩ 내장 자료로 되돌리기</button>
+                            </div>
+                            <details style="margin-top:6px;"><summary style="cursor:pointer; font-weight:700;">자료 변경 기록</summary><div id="data-upd-log"></div></details>
+                            <div style="color:#64748b; margin-top:3px;">모집요강·입결이 새로 나오면 바뀐 줄만 담은 파일을 올려 DB를 고칩니다(화면 파일 교체 불필요). 적용한 파일은 저장되어 다음에도 유지됩니다.</div>
                         </div>
                     </div>
                 </div>
@@ -2992,7 +3033,7 @@
                     sideBadge.style.color = "#94a3b8";
                 }
                 if (headerTag) {
-                    headerTag.innerText = "v15 · 263개 전형·257개 모집단위 · 전형요소 + 자체 추정 모형";
+                    headerTag.innerText = "v16 · 263개 전형 + 정시 재학생 전용 10 · 자료 업데이트";
                 }
             } else {
                 const label = (currentStudentName ? (currentStudentName + " 학생") : "성적 시뮬레이션 중") + studentProfileSuffix();
@@ -3172,8 +3213,9 @@
                 ["내신 배점(1000점 환산)", sp.specKind === "대학별 근사" ? tag("대학별 근사", EST) : tag("표준 추정", ASM), sp.specKind === "대학별 근사" ? "대학 공개 자료의 반영 구조를 근사한 배점(공식 계산 예제와 대조 전)" : "대학별 배점을 넣지 않아 2028 표준 배점(100/96.2/91.2/83.5/72) 사용"],
                 ["학종 서류 보정", tag("자체 모형", ASM), "학업35·진로40·공동체25는 자체 가중치이며 대학 공식 평가비율이 아님. 세특 미분석이면 보정 0"],
                 ["정시 환산·합격선", jOfficial ? tag("근사", EST) : tag("표준 추정", ASM), (jOfficial ? "영어 감점·학생부 비율은 공개 자료 근사" : "대학별 정시 규칙 미입력 → 공통 규칙") + " · 탐구는 백분위 공통 모형 · 정시 합격선(백분위)은 추정"],
-                ["적합도(0~100)", tag("자체 모형", ASM), "칸형·점수형·AI형 세 지표의 가중합. 과거 합격 여부로 보정·검증하지 않았으므로 확률이 아님"]
-            ];
+                ["적합도(0~100)", tag("자체 모형", ASM), "칸형·점수형·AI형 세 지표의 가중합. 과거 합격 여부로 보정·검증하지 않았으므로 확률이 아님"],
+                ["지원 자격", isCurOnly(item, "susi") ? tag("재학생 전용", OK) : tag("제한 없음(확인 범위)", EST), isCurOnly(item, "susi") ? "2028 졸업예정자만 지원 가능(시행계획·보도 확인). 졸업생(N수)은 지원 불가 — 대신 N수생과 경쟁하지 않음" : "졸업생도 지원 가능하거나 아직 확인하지 않은 전형"]
+            ].concat(item.updSrc ? [["업데이트 파일", tag("반영", OK), escapeHtmlDD(item.updSrc)]] : []);
             return `<div class="dd-sec"><h4>⑦ 자료 근거 — 무엇이 공식이고 무엇이 추정인가</h4><table class="dd-table" style="width:100%; font-size:11.5px;"><tbody>${rows.map(r => `<tr><td style="white-space:nowrap; font-weight:700; padding:4px 6px;">${r[0]}</td><td style="padding:4px 6px;">${r[1]}</td><td style="padding:4px 6px; color:#cbd5e1;">${r[2]}</td></tr>`).join("")}</tbody></table></div>`;
         }
 
@@ -3252,8 +3294,8 @@
         const UNIV_OFFICIAL_JEONGSI_SPEC = {
             "서울대": { engDed1000: [0, 0.5, 2.0, 4.0, 6.0, 9.0], stuRatio: 0.40, desc: "2단계 교과역량 40% · 영어2등급 -0.5점" },
             "연세대": { engDed1000: [0, 5.5, 13.8, 27.5, 44.0, 60.0], stuRatio: 0.10, desc: "서류평가 10% · 영어2등급 -5.5점(감점큼)" },
-            "고려대": { engDed1000: [0, 3.0, 6.0, 9.0, 12.0, 15.0], stuRatio: 0.15, desc: "일반0%/교과우수20% · 영어2등급 -3.0점" },
-            "서강대": { engDed1000: [0, 0.5, 1.0, 1.5, 2.0, 3.0], stuRatio: 0.15, desc: "일반0%/지균20% · 영어2등급 -0.5점(유리)" },
+            "고려대": { engDed1000: [0, 3.0, 6.0, 9.0, 12.0, 15.0], stuRatio: 0, desc: "수능(일반) 100% · 영어2등급 -3.0점 (교과우수는 별도 줄)" },
+            "서강대": { engDed1000: [0, 0.5, 1.0, 1.5, 2.0, 3.0], stuRatio: 0, desc: "수능(일반) 100% · 영어2등급 -0.5점(유리) (지역균형은 별도 줄)" },
             "성균관대": { engDed1000: [0, 1.5, 4.0, 8.0, 14.0, 20.0], stuRatio: 0.05, desc: "일반0%/사범학생부100% · 영어변표 10%" },
             "한양대": { engDed1000: [0, 2.0, 6.0, 12.0, 20.0, 30.0], stuRatio: 0.10, desc: "학생부종합 10% · 영어2등급 -2.0점" },
             "중앙대": { engDed1000: [0, 1.8, 4.5, 9.0, 15.0, 22.0], stuRatio: 0.18, desc: "수능89(출결11%)/수능67(서류33%)" },
@@ -3541,7 +3583,7 @@
         // 학종 3대 역량을 '무엇으로' 정했는지: null = 아직 평가 안 함(중립값 4.0, 가산·감산 0)
         //   "grade" 성적표 Z점수 · "sk" 세특 분석 · "manual" 슬라이더 직접 조정
         function numOr(v, fb) { const n = parseFloat(v); return isFinite(n) ? n : fb; }   // 0도 정상값으로 인정 (|| 기본값 금지)
-        function getStudentScores() {
+        function getStudentScores(noStress) {
             const val = (id) => { const e = document.getElementById(id); return e ? e.value : ""; };
             const gpa = Math.max(1, Math.min(5, numOr(val('input-gpa'), 1.50)));
             const acad = qualSrc.acad ? numOr(val('input-acad'), QUAL_NEUTRAL) : QUAL_NEUTRAL;
@@ -3569,13 +3611,14 @@
             //  ③ 보수 기준: 같은 센터의 1·2학기 누적 실측(1.00→1.45)
             const conv9 = conv5to9(gpa, currentConvMode === 3 ? CONV_5TO9_SEM2 : CONV_5TO9_MULTI);
 
-            return {
+            const out = {
                 gpa, qualAvg, acad, career, comm, qualEvaluated,
                 kor, math, eng, t1, t2, hist,
                 pKor, pMath, pTam1, pTam2, pTamBest, pAvg,
                 conv9,
                 conv9Range: { opt: 1.24 + (Math.max(1, gpa) - 1.00) * 1.20, base: conv5to9(gpa, CONV_5TO9_MULTI), cons: conv5to9(gpa, CONV_5TO9_SEM2) }
             };
+            return noStress ? out : applyNsuStress(out);
         }
 
         function calcUnivWeightedPct(u, st) {
@@ -3594,9 +3637,10 @@
 
             // 2028 정시 학생부(교과·서류·출결) 반영 비중(stuRatio)에 따른 정밀 보정
             let stuBonusPct = 0;
-            if (jSpec.stuRatio > 0 && gpaSource === "file") {   // 성적표를 올린 경우에만 학생부 반영 (±0.4%p 이내)
+            const stuRatio = (u.jStuRatio != null) ? u.jStuRatio : jSpec.stuRatio;
+            if (stuRatio > 0 && gpaSource === "file") {   // 성적표를 올린 경우에만 학생부 반영 (±0.4%p 이내)
                 const gpaFactor = st.gpa <= 1.15 ? 1.2 : (st.gpa <= 1.50 ? 0.6 : (st.gpa <= 2.20 ? 0.0 : (st.gpa <= 3.00 ? -0.8 : -1.8)));
-                stuBonusPct = Math.max(-0.4, Math.min(0.4, gpaFactor * 0.25 * (jSpec.stuRatio / 0.20)));
+                stuBonusPct = Math.max(-0.4, Math.min(0.4, gpaFactor * 0.25 * (stuRatio / 0.20)));
             }
 
             return Math.min(100.0, Math.max(1.0, rawWeighted - engPenaltyPct - histPenaltyPct + stuBonusPct));
@@ -3879,7 +3923,7 @@
                 document.getElementById('top-disp-gpa').innerHTML = `${stuPrefix}${st.gpa.toFixed(2)} 등급 <span style="font-size:11px; color:#94a3b8;">(9등급환산 ${st.conv9.toFixed(2)})</span>`;
             }
             if (document.getElementById('top-disp-csat-sum')) {
-                const csatLine = "국" + st.kor + "·수" + st.math + "·영" + st.eng + "·탐" + st.t1 + "/" + st.t2 + "·한" + st.hist + " | 백분위 평균 " + st.pAvg.toFixed(2) + (pctManual ? " (실제)" : " (일부 가정)");
+                const csatLine = "국" + st.kor + "·수" + st.math + "·영" + st.eng + "·탐" + st.t1 + "/" + st.t2 + "·한" + st.hist + " | 백분위 평균 " + st.pAvg.toFixed(2) + (pctManual ? " (실제)" : " (일부 가정)") + (st.nsu ? " · N수 가정 '" + st.nsu.label + "' 적용" : "");
                 document.getElementById('top-disp-csat-sum').innerText = csatLine;
                 const sideLine = document.getElementById('side-disp-csat'); if (sideLine) sideLine.innerText = "적용 중: " + csatLine;
             }
@@ -3891,7 +3935,7 @@
 
             const trackList = getActiveTrackList();
 
-            const evaluatedAll = trackList.map(u => evaluateUniversityItem(u, st));
+            const evaluatedAll = susiPool(trackList).map(u => evaluateUniversityItem(u, st));
 
             const badgeEl = document.getElementById('susi-portfolio-badge');
             if (badgeEl) {
@@ -3925,6 +3969,7 @@
             renderFinder("susi"); renderFinder("jeongsi");
             renderCourseCheck();
             renderRemainSim();
+            renderPolicyPanel();
             refreshPrintReportIfOpen();
         }
 
@@ -3934,6 +3979,14 @@
         // 입력하지 않은 값을 무엇으로 가정했는지 수시·정시 화면 맨 위에 알림
         function renderDataSourceNotice(st) {
             const susiMsg = [], jMsg = [];
+            if (st && st.nsu) {
+                const nf = nsuNewCsatFails(st);
+                const t = `<strong>N수 유입 가정 '${st.nsu.label}'</strong>(상위 누적비율 ×${st.nsu.f}) 적용 중 — 국수탐 백분위 평균 ${st.nsu.raw.pAvg.toFixed(2)} → ${st.pAvg.toFixed(2)}${st.nsu.changed.length ? " · " + st.nsu.changed.join(", ") : ""}. 실측이 아닌 가정입니다.`;
+                susiMsg.push(t + ` 이 가정에서 새로 수능최저 미달: <strong>${nf}</strong>개 전형.`);
+                jMsg.push(t);
+            }
+            if (applicantMode === "GRAD") { susiMsg.push("졸업생(N수)으로 선택해 <strong>재학생 전용 전형을 뺐습니다</strong>."); jMsg.push("졸업생(N수)으로 선택해 고려대 교과우수·서강대 지역균형 정시를 뺐습니다."); }
+            if (applicantMode === "CURONLY") { susiMsg.push("<strong>재학생 전용 전형만</strong> 보고 있습니다."); jMsg.push("<strong>재학생 전용 정시</strong>(고려대 교과우수·서강대 지역균형)만 보고 있습니다."); }
             if (gpaSource === "mock") susiMsg.push(`내신을 입력하지 않아 <strong>모의고사 등급으로 추정한 내신 ${st.gpa.toFixed(2)}</strong>로 수시를 계산했습니다. 실제 내신을 선택하거나 성적표를 올리면 정확해집니다.`);
             if (gpaSource === null) susiMsg.push(`내신이 입력되지 않아 수시 추천을 보류했습니다.`);
             if (!st.qualEvaluated) susiMsg.push(`학생부(세특)를 분석하지 않아 학종 3대 역량은 <strong>미평가</strong>입니다 — 서류 가산·감산 없이(중립값) 내신·수능최저만으로 계산했습니다. 세특 PDF를 올리거나 역량 슬라이더를 직접 조정하면 반영됩니다.`);
@@ -3996,7 +4049,7 @@
             if (!q) { box.style.display = "none"; box.innerHTML = ""; return; }
             box.style.display = "";
             let pool = finderPool().filter(u => finderMatch(u, q));
-            if (board === "jeongsi") pool = dedupeJeongsi(pool);
+            pool = board === "jeongsi" ? dedupeJeongsi(jeongsiPool(pool)) : susiPool(pool);
             if (!pool.length) { box.innerHTML = `<div style="color:#fbbf24; font-size:12px; padding:6px 2px;">'${escapeHtmlDD(q)}'에 맞는 대학·학과가 DB에 없습니다. 대학명이나 학과명 일부만 넣어 보세요 (예: '정치', '경영').</div>`; return; }
             const ready = hasActiveScore && (board === "susi" ? gpaSource !== null : mockSource !== null);
             const st = ready ? getStudentScores() : null;
@@ -4008,7 +4061,7 @@
                 if (ready) rows.sort((a, b) => b.prob - a.prob);
                 rows = rows.slice(0, 40).map(x => `<tr>
                     <td><strong>${escapeHtmlDD(x.univ)}</strong>${otherTrack(x) ? ' <span style="font-size:9.5px; color:#94a3b8;">(다른 계열)</span>' : ''}</td>
-                    <td>${escapeHtmlDD(x.dept)}</td><td style="font-size:11px;">${escapeHtmlDD(x.type)}</td>
+                    <td>${escapeHtmlDD(x.dept)}${curBadge(x, "susi")}</td><td style="font-size:11px;">${escapeHtmlDD(x.type)}</td>
                     <td style="font-weight:800; color:${ready ? tierCol[x.tier] : '#94a3b8'};">${ready ? escapeHtmlDD(x.tier === "impossible" && x.csat.pass ? "지원 어려움 (적합도 " + x.prob + ")" : x.status) : "내신 입력 후 판정"}</td>
                     <td style="font-size:11px;">5등급 추정컷 ${Number(x.cut2028_5g).toFixed(2)}</td>
                     <td style="font-size:11px;">${escapeHtmlDD(ready ? x.csat.desc : (x.csatDesc || ""))}</td>
@@ -4021,7 +4074,7 @@
                 rows = rows.slice(0, 40).map(x => `<tr>
                     <td>${escapeHtmlDD(x.jGun || "-")}</td>
                     <td><strong>${escapeHtmlDD(x.univ)}</strong>${otherTrack(x) ? ' <span style="font-size:9.5px; color:#94a3b8;">(다른 계열)</span>' : ''}</td>
-                    <td>${escapeHtmlDD(String(x.dept).replace(/\s*\([^)]*\)\s*$/, ""))}</td>
+                    <td>${escapeHtmlDD(String(x.dept).replace(/\s*\([^)]*\)\s*$/, ""))}${curBadge(x, "j")}</td>
                     <td style="font-weight:800; color:${ready ? tierCol[x.jTier] || "#f87171" : '#94a3b8'};">${ready ? escapeHtmlDD(x.jStatus || ("지원 어려움 (적합도 " + x.jProb + ")")) : "모의고사 입력 후 판정"}</td>
                     <td style="font-size:11px;">${ready ? "내 환산 " + x.myWPct.toFixed(2) + "% · " : ""}70%컷 ${Number(x.jCutPct).toFixed(1)}%</td></tr>`);
                 box.innerHTML = `<div style="font-size:11.5px; color:#cbd5e1; margin-bottom:6px;">'${escapeHtmlDD(q)}' 검색 결과 ${pool.length}건${pool.length > 40 ? " (적합도 높은 순 40건 표시)" : ""}</div>
@@ -4112,6 +4165,276 @@
             if (!isFinite(v)) { showToast("성적표를 먼저 올려 주세요."); return; }
             setGpaExact(Number(v.toFixed(2)));
             showToast(`최종 평균 ${v.toFixed(2)}로 수시·정시 추천을 다시 계산했습니다. [현재 성적으로 되돌리기]로 돌아갈 수 있습니다.`);
+        }
+
+        // ───────── 2028 재학생 전용 전형 · N수 유입 가정 · 입시 자료 업데이트 ─────────
+        // 1) 재학생(졸업예정자)만 지원할 수 있는 전형 — 2028 시행계획·보도(2026.6~9)로 확인된 것만
+        //    수시: 아래 대학·전형명 규칙에 맞는 줄 / 정시: jOnly 줄 중 curOnly(고려대 교과우수·서강대 지역균형)
+        const CUR_ONLY_SUSI_RULES = [
+            ["서울대", /지역균형/], ["고려대", /학교추천/], ["연세대", /추천형/], ["서강대", /^학생부교과\(지역균형\)/],
+            ["성균관대", /^학생부교과/], ["한양대", /^학생부교과\(추천형\)/], ["중앙대", /^학생부교과\(지역균형\)/],
+            ["경희대", /^학생부교과\(지역균형\)/], ["한국외대", /학교장추천/], ["서울시립대", /^학생부교과\(지역균형\)/], ["이화여대", /고교추천/]
+        ];
+        function isCurOnly(u, board) {
+            if (!u) return false;
+            if (board === "j") return !!(u.jOnly && u.curOnly);
+            if (u.jOnly) return false;
+            if (typeof u.curOnly === "boolean") return u.curOnly;   // 업데이트 파일로 직접 지정한 값 우선
+            if (/·/.test(String(u.univ))) return false;
+            const k = univSpecKey(u);
+            return CUR_ONLY_SUSI_RULES.some(([n, re]) => n === k && re.test(String(u.type || "")));
+        }
+        function curBadge(u, board) {
+            if (!isCurOnly(u, board)) return "";
+            return ` <span class="cur-only-badge" title="2028학년도 졸업예정자(재학생)만 지원 가능 — 졸업생(N수) 지원 불가. 2028 시행계획·보도 기준이며 모집요강에서 확인하세요.">🎓재학생 전용</span>`;
+        }
+        // 지원자 신분: ALL 재학생(전체 보기) · CURONLY 재학생 전용 전형만 · GRAD 졸업생(N수) — 재학생 전용 제외
+        let applicantMode = "ALL";
+        function applicantKeep(u, board) {
+            if (applicantMode === "GRAD") return !isCurOnly(u, board);
+            if (applicantMode === "CURONLY") return isCurOnly(u, board);
+            return true;
+        }
+        function susiPool(list) { return (list || []).filter(u => !u.jOnly && applicantKeep(u, "susi")); }
+        function jeongsiPool(list) { return (list || []).filter(u => applicantKeep(u, "j")); }
+        function setApplicantMode(v) {
+            applicantMode = (v === "CURONLY" || v === "GRAD") ? v : "ALL";
+            document.querySelectorAll(".js-applicant-sel").forEach(el => { el.value = applicantMode; });
+            renderPolicyPanel();
+            if (hasActiveScore) recalcAll();
+            if (typeof hsScheduleSave === "function") hsScheduleSave();
+        }
+
+        // 2) N수 유입 스트레스 테스트 (가정) — 학평은 재학생만 보므로 수능에서는 상위 누적비율이 늘어난다고 가정
+        //    새 백분위 = 100 − (100 − 학평 백분위) × 배율.  영어·한국사는 절대평가라 그대로
+        const NSU_LEVELS = { 0: { f: 1, label: "없음" }, 1: { f: 1.25, label: "보통" }, 2: { f: 1.5, label: "강함" } };
+        let nsuLevel = 0;
+        function setNsuLevel(v) {
+            const n = parseInt(v, 10);
+            nsuLevel = NSU_LEVELS[n] ? n : 0;
+            document.querySelectorAll(".js-nsu-sel").forEach(el => { el.value = String(nsuLevel); });
+            renderPolicyPanel();
+            if (hasActiveScore) recalcAll();
+            if (typeof hsScheduleSave === "function") hsScheduleSave();
+        }
+        function applyNsuStress(o) {
+            if (!nsuLevel || mockSource === null || applicantMode === "GRAD") return o;
+            const f = NSU_LEVELS[nsuLevel].f;
+            const adj = (p) => Number(Math.max(0, 100 - (100 - p) * f).toFixed(2));
+            const raw = { kor: o.kor, math: o.math, t1: o.t1, t2: o.t2, pKor: o.pKor, pMath: o.pMath, pTam1: o.pTam1, pTam2: o.pTam2, pAvg: o.pAvg };
+            const pKor = adj(o.pKor), pMath = adj(o.pMath), pTam1 = adj(o.pTam1), pTam2 = adj(o.pTam2);
+            const kor = Math.max(o.kor, percentileToEstimatedGrade(pKor)), math = Math.max(o.math, percentileToEstimatedGrade(pMath));
+            const t1 = Math.max(o.t1, percentileToEstimatedGrade(pTam1)), t2 = Math.max(o.t2, percentileToEstimatedGrade(pTam2));
+            const pTamBest = Math.max(pTam1, pTam2) * 0.6 + Math.min(pTam1, pTam2) * 0.4;
+            const pAvg = pKor * 0.35 + pMath * 0.35 + pTamBest * 0.30;
+            const changed = [["국어", raw.kor, kor], ["수학", raw.math, math], ["탐구1", raw.t1, t1], ["탐구2", raw.t2, t2]].filter(x => x[1] !== x[2]).map(x => `${x[0]} ${x[1]}→${x[2]}등급`);
+            return Object.assign({}, o, { kor, math, t1, t2, pKor, pMath, pTam1, pTam2, pTamBest, pAvg, nsu: { level: nsuLevel, label: NSU_LEVELS[nsuLevel].label, f, raw, changed } });
+        }
+        // 최저를 원래 성적으로는 충족했지만 N수 가정에서는 못 맞추는 수시 전형 수
+        function nsuNewCsatFails(st) {
+            if (!st || !st.nsu) return 0;
+            const r = st.nsu.raw;
+            return susiPool(getActiveTrackList()).filter(u => u.csatRule && u.csatRule !== "NONE"
+                && evaluateCSAT(u.csatRule, r.kor, r.math, st.eng, r.t1, r.t2, st.hist).pass
+                && !evaluateCSAT(u.csatRule, st.kor, st.math, st.eng, st.t1, st.t2, st.hist).pass).length;
+        }
+
+        // 3) 정시 재학생 전용 전형 (2028 신설·변경). 모집단위별 합격선은 아직 없음 → 같은 학과 일반 전형 추정컷에서 뺀 '추정'
+        const JEONGSI_CURONLY_2028 = (function () {
+            const KU = "고려대 2028 대학입학전형시행계획(2026.4.30) p.26~27: 가군 · 졸업예정자(2028.2 졸업)만 · 수능80+교과20 · 국수탐 백분위 · 교과 1~5등급 100/95/83/67/55 · 전체 489명";
+            const SG = "서강대 수능(지역균형) 신설(베리타스알파 2026.7.16 보도): 졸업예정자 · 학교장 추천(인원 제한 없음) · 수능80+교과10+출결10 · 전체 90명 · 군·모집단위별 인원은 미확인";
+            const mk = (id, base, dept, track, n, cutAdj, extra) => Object.assign({
+                id, baseId: base, univ: id.startsWith("KU") ? "고려대" : "서강대", dept, track,
+                type: id.startsWith("KU") ? "정시 수능(교과우수)" : "정시 수능(지역균형)",
+                isComp: false, zW: 0.03, csatRule: "NONE", csatDesc: "정시 전형(수능최저 없음)",
+                jGun: id.startsWith("KU") ? "가군" : "나군", jOnly: true, curOnly: true, jStuRatio: 0.20, cutAdj,
+                jSpecDesc: id.startsWith("KU") ? "수능80+교과20 · 졸업예정자만" : "수능80+교과10+출결10 · 졸업예정자·학교장추천",
+                note: (id.startsWith("KU") ? KU : SG) + (n ? ` · 이 모집단위 ${n}명` : "") + ` · 70%컷은 같은 학과 일반 전형 추정컷 ${cutAdj}%p 가정(실측 없음)`
+            }, extra || {});
+            return [
+                mk("KU_J_POLI", "KU_POLI_REC", "정치외교학과 · 정시 교과우수", "SOCIAL", 10, -0.4),
+                mk("KU_J_PUB", "KU_POLI_REC", "행정학과 · 정시 교과우수", "SOCIAL", 9, -0.6),
+                mk("KU_J_SOCIO", "KU_POLI_REC", "사회학과 · 정시 교과우수", "SOCIAL", 10, -0.7),
+                mk("KU_J_BIZ", "KU_BIZ_REC", "경영학과 · 정시 교과우수", "BIZ", 37, -0.4),
+                mk("KU_J_FREE", "KU_FREE", "자유전공학부 · 정시 교과우수", "FREE", 10, -0.4),
+                mk("KU_J_LANG", "KU_LANG_REC", "국어국문 / 영어영문 · 정시 교과우수", "HUMANITIES", 20, -0.4),
+                mk("KU_J_CS", "KU_CS_REC", "컴퓨터학과 · 정시 교과우수", "TECH", 13, -0.4),
+                mk("KU_J_BIO", "KU_BIO_REC", "생명과학부 / 생명공학부 · 정시 교과우수", "NATURAL", 24, -0.4),
+                mk("SG_J_SOC", "SOGANG_SOC", "사회과학부 · 정시 수능(지역균형)", "SOCIAL", 0, -0.4, { jGun: "나군(군 미확인)" }),
+                mk("SG_J_BIZ", "SOGANG_BIZ", "경영학부 · 정시 수능(지역균형)", "BIZ", 0, -0.4, { jGun: "나군(군 미확인)" })
+            ];
+        })();
+        (function addJeongsiCurOnly() {
+            JEONGSI_CURONLY_2028.forEach(x => {
+                if (UNIV_DB_JS.some(u => u.id === x.id)) return;
+                const b = UNIV_DB_JS.find(u => u.id === x.baseId);
+                if (!b) return;
+                const o = Object.assign({}, x, {
+                    cut2028_5g: b.cut2028_5g, cut2027_9g: b.cut2027_9g, cutPrev5g: b.cutPrev5g,
+                    jCutPct: Number((b.jCutPct + x.cutAdj).toFixed(1)), jWeight: Object.assign({}, b.jWeight)
+                });
+                delete o.baseId; delete o.cutAdj;
+                UNIV_DB_JS.push(o);
+            });
+        })();
+
+        // 4) 입시 자료 업데이트 파일(.json) — 페이지를 바꾸지 않고 DB만 고침. 적용한 파일 목록은 저장되어 다음에 열어도 유지
+        const DATA_BUILTIN_ASOF = "2026-10-22";
+        const DATA_BUILTIN_SRC = "내장 DB · 서울대·고려대·연세대 2028 시행계획 대조 · 재학생 전용 전형은 2028 시행계획·보도(2026.6~9) 기준";
+        const DATA_UPD_LS = "CODEX2028_DATA_UPDATES_v1";
+        const DATA_UPD_KEYS = { univ: "s", dept: "s", track: "t", type: "s", cut2028_5g: [1, 5], cut2027_9g: [1, 9], cutPrev5g: [1, 5], isComp: "b", zW: [0, 0.2], csatRule: "r", csatDesc: "s", jCutPct: [1, 100], jWeight: "w", jGun: "s", note: "s", jOnly: "b", curOnly: "b", jStuRatio: [0, 1], jSpecDesc: "s" };
+        let dataUpdates = [];
+        let DATA_BASE = null;
+        const dClone = (o) => JSON.parse(JSON.stringify(o));
+        function dataBaseSnap() {
+            if (!DATA_BASE) DATA_BASE = { db: dClone(UNIV_DB_JS), ver: dClone(VERIFIED_2028_PLAN), js: dClone(UNIV_OFFICIAL_JEONGSI_SPEC) };
+            return DATA_BASE;
+        }
+        const dStr = (v, max) => String(v == null ? "" : v).replace(/[<>"'`&\\]/g, "").slice(0, max || 200);
+        // 파일 내용을 검사해 허용된 칸만 남김. 틀린 줄은 이유와 함께 건너뜀
+        function sanitizeDataUpdate(o, fileName) {
+            if (!o || typeof o !== "object" || o.app !== "CODEX2028-data") throw new Error("입시 자료 업데이트 파일이 아닙니다 (\"app\": \"CODEX2028-data\" 필요)");
+            const asOf = dStr(o.asOf, 10);
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(asOf)) throw new Error("asOf(자료 기준일)를 2026-11-01 형식으로 넣어 주세요");
+            const source = dStr(o.source, 300);
+            if (!source) throw new Error("source(출처)를 넣어 주세요 — 예: '서강대 2028 모집요강 p.12'");
+            const base = dataBaseSnap();
+            const rules = new Set(base.db.map(u => u.csatRule).concat(["NONE"]));
+            const skipped = [], entries = [];
+            (Array.isArray(o.entries) ? o.entries : []).slice(0, 500).forEach((e, i) => {
+                if (!e || typeof e !== "object") { skipped.push(`${i + 1}번째: 형식 오류`); return; }
+                const id = dStr(e.id, 40);
+                if (!/^[A-Za-z0-9_]{2,40}$/.test(id)) { skipped.push(`${i + 1}번째: id 형식 오류`); return; }
+                if (e.remove === true) { entries.push({ id, remove: true }); return; }
+                const out = { id }; let bad = "";
+                Object.keys(DATA_UPD_KEYS).forEach(k => {
+                    if (!(k in e) || bad) return;
+                    const t = DATA_UPD_KEYS[k], v = e[k];
+                    if (Array.isArray(t)) { const n = Number(v); if (!isFinite(n) || n < t[0] || n > t[1]) bad = `${k} 범위(${t[0]}~${t[1]}) 밖`; else out[k] = n; }
+                    else if (t === "s") out[k] = dStr(v, k === "note" ? 400 : 120);
+                    else if (t === "b") out[k] = v === true;
+                    else if (t === "t") { if (!TRACK_NAMES[v] || v === "ALL") bad = "track 값 오류"; else out[k] = v; }
+                    else if (t === "r") { if (!rules.has(v)) bad = `csatRule '${dStr(v, 30)}'는 지원하지 않음`; else out[k] = v; }
+                    else if (t === "w") { const k2 = v || {}; const w = { k: Number(k2.k), m: Number(k2.m), t: Number(k2.t) }; if (![w.k, w.m, w.t].every(x => isFinite(x) && x >= 0 && x <= 100)) bad = "jWeight 오류"; else out[k] = w; }
+                });
+                if (bad) { skipped.push(`${id}: ${bad}`); return; }
+                entries.push(out);
+            });
+            const verified = {}, jeongsiSpec = {};
+            Object.keys(o.verified || {}).slice(0, 100).forEach(k => { const d = dStr(o.verified[k], 10); if (/^\d{4}-\d{2}-\d{2}$/.test(d)) verified[dStr(k, 20)] = d; });
+            Object.keys(o.jeongsiSpec || {}).slice(0, 100).forEach(k => {
+                const s = o.jeongsiSpec[k] || {}, ed = Array.isArray(s.engDed1000) ? s.engDed1000.map(Number) : null;
+                if (!ed || ed.length < 5 || ed.length > 9 || !ed.every(x => isFinite(x) && x >= 0 && x <= 200)) { skipped.push(`정시 규칙 ${dStr(k, 20)}: engDed1000 오류`); return; }
+                const sr = Number(s.stuRatio);
+                jeongsiSpec[dStr(k, 20)] = { engDed1000: ed, stuRatio: isFinite(sr) && sr >= 0 && sr <= 1 ? sr : 0, desc: dStr(s.desc, 120) };
+            });
+            return { asOf, source, title: dStr(o.title, 80), file: dStr(fileName, 80), appliedAt: (typeof hsNowStr === "function" ? hsNowStr() : new Date().toISOString().slice(0, 16).replace("T", " ")), entries, verified, jeongsiSpec, skipped };
+        }
+        // 내장 DB로 되돌린 뒤 저장된 업데이트를 순서대로 다시 적용
+        function dataRebuild() {
+            const base = dataBaseSnap();
+            UNIV_DB_JS.length = 0; dClone(base.db).forEach(u => UNIV_DB_JS.push(u));
+            Object.keys(VERIFIED_2028_PLAN).forEach(k => delete VERIFIED_2028_PLAN[k]); Object.assign(VERIFIED_2028_PLAN, dClone(base.ver));
+            Object.keys(UNIV_OFFICIAL_JEONGSI_SPEC).forEach(k => delete UNIV_OFFICIAL_JEONGSI_SPEC[k]); Object.assign(UNIV_OFFICIAL_JEONGSI_SPEC, dClone(base.js));
+            dataUpdates.forEach(up => {
+                const stat = { patched: 0, added: 0, removed: 0, skipped: (up.skipped || []).slice() };
+                const tag = `${up.asOf} ${up.source}`;
+                (up.entries || []).forEach(e => {
+                    const i = UNIV_DB_JS.findIndex(u => u.id === e.id);
+                    if (e.remove) { if (i >= 0) { UNIV_DB_JS.splice(i, 1); stat.removed++; } return; }
+                    if (i >= 0) { Object.assign(UNIV_DB_JS[i], dClone(e), { updSrc: tag }); stat.patched++; return; }
+                    const need = ["univ", "dept", "track", "type", "jCutPct", "jGun"].concat(e.jOnly ? [] : ["cut2028_5g", "cut2027_9g"]);
+                    const miss = need.filter(k => e[k] == null || e[k] === "");
+                    if (miss.length) { stat.skipped.push(`${e.id}: 새 항목에 ${miss.join(", ")} 없음`); return; }
+                    UNIV_DB_JS.push(Object.assign({ isComp: false, zW: 0.03, csatRule: "NONE", csatDesc: "최저 없음", jWeight: { k: 33.3, m: 33.3, t: 33.4 }, note: "", cut2028_5g: 1.5, cut2027_9g: 2.5 }, dClone(e), { cutPrev5g: e.cutPrev5g != null ? e.cutPrev5g : (e.cut2028_5g || 1.5), updSrc: tag }));
+                    stat.added++;
+                });
+                Object.assign(VERIFIED_2028_PLAN, up.verified || {});
+                Object.assign(UNIV_OFFICIAL_JEONGSI_SPEC, dClone(up.jeongsiSpec || {}));
+                up.stat = stat;
+            });
+            const dl = document.getElementById("finder-list"); if (dl) dl.innerHTML = "";
+        }
+        async function dataUpdSave() {
+            const body = { list: dataUpdates.map(u => { const c = Object.assign({}, u); delete c.stat; return c; }) };
+            try { localStorage.setItem(DATA_UPD_LS, JSON.stringify(body)); } catch (e) { /* 저장 불가 브라우저 */ }
+            if (typeof hsPut === "function" && typeof hsDb !== "undefined" && hsDb) { try { await hsPut("dataupd", body); } catch (e) { /* 무시 */ } }
+        }
+        function dataUpdLoadList(list) {
+            dataUpdates = Array.isArray(list) ? list.filter(u => u && u.asOf && Array.isArray(u.entries)).slice(-20) : [];
+            dataRebuild(); renderPolicyPanel();
+        }
+        function dataUpdInit() {
+            dataBaseSnap();
+            let o = null; try { o = JSON.parse(localStorage.getItem(DATA_UPD_LS) || "null"); } catch (e) { o = null; }
+            dataUpdLoadList(o && o.list);
+        }
+        async function importDataUpdate(ev) {
+            const f = ev.target.files && ev.target.files[0]; if (!f) return;
+            try {
+                const up = sanitizeDataUpdate(JSON.parse(await readFileAsText(f)), f.name);
+                dataUpdates = dataUpdates.filter(u => !(u.asOf === up.asOf && u.source === up.source)).concat([up]).slice(-20);
+                dataRebuild();
+                await dataUpdSave();
+                renderPolicyPanel();
+                if (hasActiveScore) recalcAll();
+                const s = up.stat || { patched: 0, added: 0, removed: 0, skipped: [] };
+                showToast(`📥 자료 업데이트(${up.asOf}) 적용 — 수정 ${s.patched} · 추가 ${s.added} · 삭제 ${s.removed}${s.skipped.length ? " · 건너뜀 " + s.skipped.length : ""}`);
+            } catch (e) { showToast("⚠️ 업데이트 파일을 적용하지 못했습니다: " + ((e && e.message) || e)); }
+            finally { try { ev.target.value = ""; } catch (e) { /* 무시 */ } }
+        }
+        async function resetDataUpdates() {
+            const btn = document.getElementById("data-reset-btn");
+            if (btn && btn.dataset.armed !== "1") { btn.dataset.armed = "1"; btn.innerText = "정말 되돌릴까요? 한 번 더"; setTimeout(() => { btn.dataset.armed = ""; btn.innerText = "↩ 내장 자료로 되돌리기"; }, 4000); return; }
+            if (btn) { btn.dataset.armed = ""; btn.innerText = "↩ 내장 자료로 되돌리기"; }
+            dataUpdates = []; dataRebuild(); await dataUpdSave(); renderPolicyPanel();
+            if (hasActiveScore) recalcAll();
+            showToast("↩ 내장 입시 자료로 되돌렸습니다.");
+        }
+        function downloadDataTemplate() {
+            const tpl = {
+                app: "CODEX2028-data", v: 1, asOf: "2026-11-01", source: "예: 서강대 2028 모집요강 p.12 (확인한 문서·쪽수)", title: "예시 — 이 줄들은 지우고 쓰세요",
+                _help: "entries: id가 같으면 그 칸만 고침, 없는 id는 새로 추가(univ·dept·track·type·jCutPct·jGun·cut2028_5g·cut2027_9g 필요), remove:true는 삭제. track: SOCIAL HUMANITIES BIZ TECH NATURAL MEDICAL FREE. curOnly: true면 재학생 전용 표시. verified: 대학별 시행계획 대조일. jeongsiSpec: 대학별 영어 감점(1000점 기준)·학생부 비율",
+                entries: [
+                    { id: "SG_J_SOC", jGun: "나군", note: "모집요강 확인: 사회과학부 ○명" },
+                    { id: "SOGANG_SOC", cut2028_5g: 1.12, csatRule: "3EACH3", csatDesc: "3개 영역 각 3등급 + 한국사 4" },
+                    { id: "NEW_EXAMPLE_ID", univ: "예시대", dept: "예시학과", track: "SOCIAL", type: "학생부교과(예시)", cut2028_5g: 1.5, cut2027_9g: 2.6, jCutPct: 93.0, jGun: "가군", curOnly: true },
+                    { id: "OLD_ID_TO_DELETE", remove: true }
+                ],
+                verified: { "서강대": "2026-11-01" },
+                jeongsiSpec: { "서강대": { engDed1000: [0, 0.5, 1.0, 1.5, 2.0, 3.0], stuRatio: 0, desc: "수능 100% · 영어2등급 -0.5점" } }
+            };
+            saveBlobFile(new Blob([JSON.stringify(tpl, null, 2)], { type: "application/json" }), "입시자료_업데이트_양식.json", "⬇ 양식을 저장했습니다. 고친 뒤 [업데이트 파일 불러오기]로 올리세요.");
+        }
+        function renderPolicyPanel() {
+            const ap = document.getElementById("policy-applicant-info");
+            if (ap) {
+                const nS = UNIV_DB_JS.filter(u => isCurOnly(u, "susi")).length, nJ = UNIV_DB_JS.filter(u => isCurOnly(u, "j")).length;
+                ap.innerHTML = `재학생 전용 표시: 수시 <strong>${nS}</strong>개 · 정시 <strong>${nJ}</strong>개` + (applicantMode === "GRAD" ? ` → <strong style="color:#b91c1c;">모두 제외 중</strong>` : (applicantMode === "CURONLY" ? ` → <strong style="color:#0369a1;">이것만 표시 중</strong>` : ""));
+            }
+            const nr = document.getElementById("nsu-result");
+            if (nr) {
+                if (!nsuLevel) nr.innerHTML = "학평 성적을 그대로 씁니다.";
+                else if (applicantMode === "GRAD") nr.innerHTML = "졸업생(N수)으로 선택해 적용하지 않습니다.";
+                else if (mockSource === null || !hasActiveScore) nr.innerHTML = `'${NSU_LEVELS[nsuLevel].label}' 가정 — 모의고사를 입력하면 적용됩니다.`;
+                else {
+                    const st = getStudentScores();
+                    if (st.nsu) nr.innerHTML = `'${st.nsu.label}' 적용: 국수탐 백분위 평균 ${st.nsu.raw.pAvg.toFixed(2)} → <strong>${st.pAvg.toFixed(2)}</strong> · ${st.nsu.changed.length ? "등급 " + st.nsu.changed.join(", ") : "등급 변화 없음"} · 새로 최저 미달 <strong>${nsuNewCsatFails(st)}</strong>개 전형`;
+                }
+            }
+            const box = document.getElementById("data-asof");
+            if (box) {
+                const latest = dataUpdates.length ? dataUpdates[dataUpdates.length - 1].asOf : DATA_BUILTIN_ASOF;
+                box.innerHTML = `자료 기준일 <strong style="font-size:13px;">${escapeHtmlDD(latest)}</strong>${dataUpdates.length ? ` <span style="color:#64748b;">(내장 ${DATA_BUILTIN_ASOF} + 업데이트 ${dataUpdates.length}건)</span>` : " (내장 자료)"}`;
+            }
+            const lg = document.getElementById("data-upd-log");
+            if (lg) {
+                const rows = [`<li><strong>${DATA_BUILTIN_ASOF}</strong> 내장 — ${escapeHtmlDD(DATA_BUILTIN_SRC)}</li>`].concat(dataUpdates.map(u => {
+                    const s = u.stat || { patched: 0, added: 0, removed: 0, skipped: [] };
+                    return `<li><strong>${escapeHtmlDD(u.asOf)}</strong> ${escapeHtmlDD(u.title || "")} — 출처: ${escapeHtmlDD(u.source)} · 수정 ${s.patched} · 추가 ${s.added} · 삭제 ${s.removed}${Object.keys(u.verified || {}).length ? " · 시행계획 대조 " + Object.keys(u.verified).map(escapeHtmlDD).join("·") : ""}${s.skipped.length ? `<br><span style="color:#b45309;">건너뜀: ${s.skipped.slice(0, 8).map(escapeHtmlDD).join(" / ")}${s.skipped.length > 8 ? " …" : ""}</span>` : ""} <span style="color:#64748b;">(${escapeHtmlDD(u.file || "")} · ${escapeHtmlDD(u.appliedAt || "")})</span></li>`;
+                }));
+                lg.innerHTML = `<ul style="margin:4px 0 0 16px; padding:0;">${rows.join("")}</ul>`;
+            }
         }
 
         function getPickedSusi6(evalList, stArg) {
@@ -4208,7 +4531,7 @@
                             <span class="status-chip status-${item.tier}">${item.status}</span>
                         </div>
                         <div class="card-univ-title">${item.univ}</div>
-                        <div class="card-dept-name">${item.dept}</div>
+                        <div class="card-dept-name">${item.dept}${curBadge(item, "susi")}</div>
                         <div style="font-size:11px; color:#e2e8f0; font-weight:700; margin-bottom:2px;">${item.type}</div>
                         <div style="font-size:10.3px; color:#7dd3fc; margin-bottom:4px;">📌 <strong>50%컷(최초) ${item.cut50_5g.toFixed(2)} · 70%컷(최종) ${item.cut70_5g.toFixed(2)}</strong> <span style="color:#94a3b8;">(27컷 ${item.cut2027_9g.toFixed(2)} · 충원율 ${item.replRate}%)</span></div>
                         <div class="trio-eval-grid">
@@ -4638,7 +4961,7 @@
                 return `
                 <tr class="susi-row">
                     <td><strong>${u.univ}</strong><br><span style="font-size:10px; color:#94a3b8;">${u.track}</span></td>
-                    <td style="color:#38bdf8; font-weight:700;">${u.dept}</td>
+                    <td style="color:#38bdf8; font-weight:700;">${u.dept}${curBadge(u, "susi")}</td>
                     <td>${u.type}<br><span style="color:#00f0ff; font-weight:800; font-size:10.3px;">50%컷 ${u.cut50_5g.toFixed(2)} · 70%컷 ${u.cut70_5g.toFixed(2)}</span><br><span style="color:#94a3b8; font-size:9.8px;">(27컷 ${u.cut2027_9g.toFixed(2)} · 충원율 ${u.replRate}%)</span></td>
                     <td><strong style="color:#e9d5ff;">${u.gemProb}</strong><br><span style="font-size:10px; color:#cbd5e1;">${u.gemLabel}</span></td>
                     <td><span class="status-chip status-${u.tier}">${u.kan}칸 (${u.jinhakProb})</span><br><span style="font-size:10px; color:#94a3b8;">${u.kanDesc}</span></td>
@@ -4704,8 +5027,9 @@
 
             // 3) 2028 학생부·교과반영 통합 모형 (AI형 40%)
             const useGpa = gpaSource === "file";
-            const stuBonusZ = !useGpa ? 0 : (jSpec.stuRatio > 0
-                ? (st.gpa <= 1.25 ? 0.03 : (st.gpa <= 1.70 ? 0.015 : (st.gpa >= 3.0 ? -0.03 : 0))) * (jSpec.stuRatio / 0.20)
+            const jStuRatio = (x.jStuRatio != null) ? x.jStuRatio : jSpec.stuRatio;
+            const stuBonusZ = !useGpa ? 0 : (jStuRatio > 0
+                ? (st.gpa <= 1.25 ? 0.03 : (st.gpa <= 1.70 ? 0.015 : (st.gpa >= 3.0 ? -0.03 : 0))) * (jStuRatio / 0.20)
                 : 0);
             const gemProb = Math.max(5, Math.min(98, Math.round(75 + (zg + stuBonusZ) * 185)));
             const gemLabel = gemProb >= 85 ? "최초합안정" : (gemProb >= 68 ? "적정주력" : "소신도전");
@@ -4724,7 +5048,7 @@
                 myWPct, jGap, jProb, jTier, jStatus, isJOverqualified,
                 myScore1000, cutScore1000, uwayDelta, uwayProb,
                 jinhakProb, jKan, jKanDesc, gemProb, gemLabel,
-                jCut50Pct, jCut70Pct, jReplRate, engDed1000, jSpecDesc: jSpec.desc
+                jCut50Pct, jCut70Pct, jReplRate, engDed1000, jSpecDesc: x.jSpecDesc || jSpec.desc
             });
         }
 
@@ -4794,7 +5118,8 @@
                 kidnapBox.style.display = 'none';
             }
 
-            const basePool = trackList.length >= 3 ? trackList : UNIV_DB_JS;
+            const jPoolT = jeongsiPool(trackList);
+            const basePool = jPoolT.length >= 3 ? jPoolT : jeongsiPool(UNIV_DB_JS);
             const evaluatedJ = dedupeJeongsi(basePool).map(x => evaluateJeongsiItem(x, st));
 
             let viableJ = evaluatedJ.filter(x => x.jProb >= 50 && !x.isJOverqualified);
@@ -4816,7 +5141,8 @@
                             <span class="status-chip status-${p.jTier}">${p.jStatus}</span>
                         </div>
                         <div class="card-univ-title">${p.univ}</div>
-                        <div class="card-dept-name">${p.dept}</div>
+                        <div class="card-dept-name">${p.dept}${curBadge(p, "j")}</div>
+                        ${p.jOnly ? `<div style="font-size:10px; color:#64748b; margin-bottom:3px;">${escapeHtmlDD(p.jSpecDesc || "")} · 70%컷은 추정</div>` : ""}
                         <div style="font-size:10.5px; color:#fbbf24; font-weight:700; margin-bottom:4px;">50%컷(최초) ${p.jCut50Pct.toFixed(1)}% · 70%컷(최종) ${p.jCut70Pct.toFixed(1)}% <span style="color:#cbd5e1;">(내 환산 ${p.myWPct.toFixed(2)}% · 충원 ${p.jReplRate}%)</span></div>
                         <div class="trio-eval-grid">
                             <div class="trio-eval-box t-gemini">
@@ -4870,7 +5196,7 @@
                         return `
                         <div class="tier-dept-item">
                             <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:800;">
-                                <span>[${it.jGun || '가/나'}] ${it.univ} · <span style="color:#38bdf8;">${it.dept}</span></span>
+                                <span>[${it.jGun || '가/나'}] ${it.univ} · <span style="color:#38bdf8;">${it.dept}</span>${curBadge(it, "j")}</span>
                                 <span style="color:${color};">${it.jKan}칸 · ${it.jProb}</span>
                             </div>
                             <div style="display:flex; justify-content:space-between; font-size:10.3px; color:#cbd5e1;">
@@ -4975,7 +5301,7 @@
                     <tr>
                         <td><strong>${u.jGun || '가/나군'}</strong></td>
                         <td><strong>${u.univ}</strong></td>
-                        <td style="color:#38bdf8; font-weight:700;">${u.dept}</td>
+                        <td style="color:#38bdf8; font-weight:700;">${u.dept}${curBadge(u, "j")}</td>
                         <td>국${u.jWeight.k}·수${u.jWeight.m}·탐${u.jWeight.t} <span style="color:#fcd34d; font-size:10px;">(영-${u.engDed1000.toFixed(1)}점)</span><br><span style="font-size:10px; color:#94a3b8;">${u.jSpecDesc}</span></td>
                         <td><strong style="color:#00f0ff;">50%컷 ${u.jCut50Pct.toFixed(1)}% / 70%컷 ${u.jCut70Pct.toFixed(1)}%</strong><br><span style="font-size:10px; color:#cbd5e1;">(내 환산 ${u.myWPct.toFixed(2)}% · 충원 ${u.jReplRate}%)</span></td>
                         <td><strong style="color:#e9d5ff;">${u.gemProb}</strong><br><span style="font-size:10px; color:#cbd5e1;">${u.gemLabel}</span></td>
@@ -5918,11 +6244,11 @@
                     pKor, pMath, pTam1, pTam2, pTamBest, pAvg
                 });
 
-                const evalS = trackList.map(u => evaluateUniversityItem(u, simSt));
+                const evalS = susiPool(trackList).map(u => evaluateUniversityItem(u, simSt));
                 const susiPicks = getPickedSusi6(evalS, simSt);
                 const susiSummary = susiPicks.slice(0, 3).map(p => `<span style="color:#7dd3fc; font-weight:700;">${p.univ}</span> ${p.dept.split('/')[0].trim()}(${p.prob})`).join(" · ");
 
-                const evalJ = dedupeJeongsi(trackList).map(x => evaluateJeongsiItem(x, simSt));
+                const evalJ = dedupeJeongsi(jeongsiPool(trackList)).map(x => evaluateJeongsiItem(x, simSt));
                 let viableJ = evalJ.filter(x => x.jProb >= 50 && !x.isJOverqualified);
                 if (viableJ.length < 3) viableJ = evalJ.filter(x => x.jProb >= 50);
                 const jPicks = getPickedJeongsi6(viableJ, evalJ);
@@ -6745,11 +7071,11 @@ ${r.clean.slice(0, 14000)}`;
             const trackLabel = (TRACK_NAMES[currentTrack] || currentTrack) + studentProfileSuffix();
 
             const trackList = getActiveTrackList();
-            const evalSusi = trackList.map(u => evaluateUniversityItem(u, st));
+            const evalSusi = susiPool(trackList).map(u => evaluateUniversityItem(u, st));
             const pickedSusi6 = getPickedSusi6(evalSusi);
             const possibleSusi = evalSusi.filter(x => x.prob >= 50 && x.csat.pass && !x.isOverqualified);
 
-            const evalJeongsi = dedupeJeongsi(trackList.length >= 3 ? trackList : UNIV_DB_JS).map(x => evaluateJeongsiItem(x, st));
+            const evalJeongsi = dedupeJeongsi(jeongsiPool(trackList).length >= 3 ? jeongsiPool(trackList) : jeongsiPool(UNIV_DB_JS)).map(x => evaluateJeongsiItem(x, st));
             let viableJ = evalJeongsi.filter(x => x.jProb >= 50 && !x.isJOverqualified);
             if (viableJ.length < 6) viableJ = evalJeongsi.filter(x => x.jProb >= 50);
             const pickedJeongsi6 = getPickedJeongsi6(viableJ, evalJeongsi);
@@ -7131,6 +7457,7 @@ ${r.clean.slice(0, 14000)}`;
             recalcZSimulator();
             recalcFinalExamSimulator();
             resetToInitialEmpty(true);
+            dataUpdInit();
         });
     </script>
 <datalist id="finder-list"></datalist>
