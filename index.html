@@ -2273,6 +2273,16 @@
                     <div id="member-precision-briefing" style="background:rgba(15, 23, 42, 0.94); border:1.5px solid #10b981; border-radius:10px; padding:12px 15px; margin-bottom:16px; display:none;">
                     </div>
 
+                    <!-- 1순위: 희망 대학·학과 -->
+                    <div id="hope-bar" class="univ-analysis-section" style="margin-bottom:12px; padding:10px 14px; border:1.5px solid #f59e0b;">
+                        <div style="font-weight:800; color:#fbbf24; font-size:14px; margin-bottom:6px;">⭐ 1순위 — 가고 싶은 대학·학과</div>
+                        <div style="display:flex; flex-wrap:wrap; gap:8px; font-size:12px; color:#cbd5e1;">
+                            <label style="flex:1 1 220px;">희망 대학 <input type="text" id="hope-univ" maxlength="60" placeholder="예: 서울대, 연세대, 고려대 (앞에 쓴 대학이 우선)" onchange="hopeSet('hopeUniv', this.value)" style="width:100%; padding:6px 8px; border-radius:6px; border:1px solid #475569; background:#0f172a; color:#e2e8f0;"></label>
+                            <label style="flex:1 1 180px;">희망 학과 <input type="text" id="hope-dept" maxlength="40" placeholder="예: 정치외교, 국제" onchange="hopeSet('hopeDept', this.value)" style="width:100%; padding:6px 8px; border-radius:6px; border:1px solid #475569; background:#0f172a; color:#e2e8f0;"></label>
+                        </div>
+                        <div id="hope-state" style="font-size:12px; color:#94a3b8; margin-top:6px; line-height:1.6;"></div>
+                    </div>
+
                     <!-- 학교장 추천 선택 -->
                     <div id="rec-pick-bar" class="univ-analysis-section" style="margin-bottom:12px; padding:10px 14px; border:1.5px solid #a78bfa;">
                         <div style="font-weight:800; color:#c4b5fd; font-size:14px; margin-bottom:6px;">🎫 학교장 추천 — 받은 추천을 체크하세요 (여러 개 가능)</div>
@@ -5485,6 +5495,47 @@
             motionPlay(h, _mbH);
         }
 
+        // ───────── 추천 순서: ① 학생 희망 대학·학과 → ② 성적 적합도 → ③ 같은 조건이면 세특이 맞는 곳 ─────────
+        const HOPE_LS = "codex_hope_v1", HOPE_MAX = 4;   // 희망 카드는 최대 4장(나머지 2장 이상은 성적 균형용 — 6장 전부 떨어지는 위험 방지)
+        const UNIV_ALIAS = { "연대": "연세대", "고대": "고려대", "서울대학교": "서울대", "외대": "한국외대", "시립대": "서울시립대", "성대": "성균관대", "성균관": "성균관대", "이대": "이화여대", "중대": "중앙대", "경희": "경희대", "한양": "한양대", "서강": "서강대" };
+        function hopeGet() {
+            let ls = {}; try { ls = JSON.parse(localStorage.getItem(HOPE_LS) || "{}"); } catch (e) { ls = {}; }
+            const a = (typeof aptState !== "undefined" && aptState) ? aptState : {};
+            return { hopeUniv: a.hopeUniv || ls.hopeUniv || "", hopeDept: a.hopeDept || ls.hopeDept || "" };
+        }
+        function hopeSet(k, v) {
+            const val = String(v || "").trim().slice(0, k === "hopeUniv" ? 60 : 40);
+            if (typeof aptState !== "undefined" && aptState) aptState[k] = val;
+            const el = document.getElementById(k === "hopeUniv" ? "apt-hope-univ" : "apt-hope-dept"); if (el) el.value = val;
+            const cur = hopeGet(); cur[k] = val;
+            try { localStorage.setItem(HOPE_LS, JSON.stringify(cur)); } catch (e) { /* 저장 불가 */ }
+            if (typeof hsScheduleSave === "function") hsScheduleSave();
+            recalcAll();
+        }
+        function hopeParse() {
+            const h = hopeGet();
+            const univs = String(h.hopeUniv).split(/[,·\/\s]+/).map(x => x.trim().replace(/학교$/, "")).filter(Boolean).map(x => UNIV_ALIAS[x] || x);
+            const depts = String(h.hopeDept).split(/[,·\/\s]+/).map(x => x.trim().replace(/(학과|학부|전공|과)$/, "")).filter(x => x.length >= 2);
+            return { univs, depts, active: univs.length > 0 || depts.length > 0 };
+        }
+        function hopeMatch(x, hp) {
+            if (!hp || !hp.active) return false;
+            const u = String(x.univ), d = String(x.dept).replace(/\s+/g, "");
+            const uOk = !hp.univs.length || hp.univs.some(n => u.split("·").some(m => m.trim() === n || m.trim().startsWith(n + "(")) || u === n);
+            const dOk = !hp.depts.length || hp.depts.some(t => d.includes(t));
+            return uOk && dOk;
+        }
+        function hopeRank(x, hp) {
+            if (!hp.univs.length) return 0;
+            const i = hp.univs.findIndex(n => String(x.univ).split("·").some(m => m.trim() === n || m.trim().startsWith(n + "(")));
+            return i < 0 ? 99 : i;
+        }
+        // 세특 맞춤 가점(같은 성적 조건에서 순서만 바꿈): 세특 분석 계열과 같은 계열이면 앞으로
+        function skTieBonus(x) {
+            const sk = (typeof skLast !== "undefined" && skLast) ? skLast : null;
+            if (!sk || typeof aptSkScore !== "function") return 0;
+            const v = aptSkScore(x, sk); return v == null ? 0 : (v - 50) * 0.12;
+        }
         function getPickedSusi6(evalList, stArg, recOpt) {
             const st = stArg || getStudentScores();
             // 학교장 추천 시나리오: 받지 못한 추천 전형은 빼고, 받은 추천은 1장씩 먼저 배치
@@ -5520,7 +5571,7 @@
 
             // 같은 구간 안에서는 합격선(5등급 70%컷)이 높은 대학을 우선 — 예전에는 '목표 확률에 가장 가까운 곳'만 봐서
             // 서울대·연세대 의예(70%)보다 지방 의대(75%)가 먼저 뽑히는 일이 있었음
-            const rankScore = (x, target, w) => mockFitDistance(x, target) * w + (x.cut2028_5g - 1) * 250;
+            const rankScore = (x, target, w) => mockFitDistance(x, target) * w + (x.cut2028_5g - 1) * 250 - skTieBonus(x);
             const reaches = viable.filter(x => x.tier === "reach").sort((a,b) => rankScore(a, 58, 0.3) - rankScore(b, 58, 0.3));
             const targets = viable.filter(x => x.tier === "target").sort((a,b) => rankScore(a, idealTargetProb, 0.5) - rankScore(b, idealTargetProb, 0.5));
             const safes = viable.filter(x => x.tier === "safe").sort((a,b) => rankScore(a, idealSafeProb, 1.0) - rankScore(b, idealSafeProb, 1.0));
@@ -5560,6 +5611,18 @@
                 const t = f.tier in need ? f.tier : "reach"; need[t]--;
             });
             // 추천 카드가 한 구간을 넘치게 채우면 나머지 구간에서 줄임(소신→적정→안정 순으로 흡수)
+            // ① 희망 대학·학과 먼저 (최저 충족 · 적합도 35 이상, 최대 4장, 그 안에서도 소신·적정·안정을 섞음)
+            const hp = hopeParse(), hopeIds = new Set();
+            if (hp.active) {
+                const before = picked.length, cap = Math.min(HOPE_MAX, 6 - before), left = () => cap - (picked.length - before);
+                const hv = evalList.filter(x => hopeMatch(x, hp) && x.csat.pass && x.prob >= 35);
+                const band = (t) => hv.filter(x => t === "reach" ? x.prob < 66 : (t === "target" ? x.prob >= 66 && x.prob < 82 : x.prob >= 82))
+                    .sort((a, b) => hopeRank(a, hp) - hopeRank(b, hp) || rankScore(a, t === "reach" ? 58 : (t === "target" ? idealTargetProb : idealSafeProb), 0.5) - rankScore(b, t === "reach" ? 58 : (t === "target" ? idealTargetProb : idealSafeProb), 0.5));
+                const ids0 = new Set(picked.map(p => p.id));
+                pickFrom(band("reach"), Math.min(2, left())); pickFrom(band("target"), Math.min(2, left())); pickFrom(band("safe"), Math.min(2, left()));
+                if (left() > 0) pickFrom(hv.slice().sort((a, b) => hopeRank(a, hp) - hopeRank(b, hp) || b.prob - a.prob), left());
+                picked.forEach(p => { if (!ids0.has(p.id)) { hopeIds.add(p.id); const t = p.prob < 66 ? "reach" : (p.prob < 82 ? "target" : "safe"); need[t]--; } });
+            }
             let over = ["reach", "target", "safe"].reduce((a, k) => a + Math.max(0, -need[k]), 0);
             ["reach", "target", "safe"].forEach(k => { if (need[k] < 0) need[k] = 0; });
             ["reach", "target", "safe"].forEach(k => { const d = Math.min(over, need[k]); need[k] -= d; over -= d; });
@@ -5572,7 +5635,8 @@
             if (picked.length < 6) pickFrom(fallback, 6 - picked.length, true);
 
             picked.sort((a,b) => a.cut2028_5g - b.cut2028_5g);
-            return jBundleOne(picked.slice(0, 6));
+            const out6 = jBundleOne(picked.slice(0, 6)).map(p => hopeIds.has(p.id) ? Object.assign({}, p, { hopePick: true }) : p);
+            return out6.filter(p => p.hopePick).concat(out6.filter(p => !p.hopePick));   // 희망 카드를 맨 앞에
         }
 
         // =========================================================================
@@ -5711,7 +5775,29 @@
             if (csatN >= 4) out.push(`🟡 수능최저가 걸린 카드가 ${csatN}장 — 최저를 못 맞추면 한꺼번에 무너집니다. 최저 없는 전형을 섞는 것이 안전합니다.`);
             return { out, n };
         }
+        function renderHopeBar(evalList, st) {
+            const h = hopeGet(), ui = document.getElementById("hope-univ"), di = document.getElementById("hope-dept"), out = document.getElementById("hope-state");
+            if (ui && document.activeElement !== ui) ui.value = h.hopeUniv; if (di && document.activeElement !== di) di.value = h.hopeDept;
+            if (!out) return;
+            const hp = hopeParse();
+            const order = `추천 순서: <strong>① 희망 대학·학과</strong>(최대 ${HOPE_MAX}장) → <strong>② 성적</strong>에 맞는 곳으로 나머지 → <strong>③</strong> 같은 성적 조건이면 <strong>세특</strong>이 맞는 계열을 먼저${(typeof skLast !== "undefined" && skLast) ? "" : " (세특을 분석하면 적용)"}.`;
+            if (!hp.active) { out.innerHTML = order + " 희망 대학이나 학과를 넣으면 그곳부터 6장에 넣습니다."; return; }
+            const picks = getPickedSusi6(evalList, st), pid = new Set(picks.filter(p => p.hopePick).map(p => p.id));
+            const ro = recOptsGlobal();
+            const rows = evalList.filter(x => hopeMatch(x, hp)).sort((a, b) => hopeRank(a, hp) - hopeRank(b, hp) || b.prob - a.prob).slice(0, 10).map(x => {
+                const nm = `${escapeHtmlDD(x.univ)} ${escapeHtmlDD(String(x.dept).split(" / ")[0])} <small>${escapeHtmlDD(String(x.type).replace(/^학생부/, ""))}</small>`;
+                let why;
+                if (pid.has(x.id)) why = `<span style="color:#34d399;">✅ 6장에 포함 (${TIER_KO[x.tier] || "상향"} ${x.prob})</span>${x.isOverqualified ? ' <span style="color:#fbbf24;">· 성적보다 많이 낮은 곳(하향) — 합격하면 정시를 못 쓰니 꼭 가고 싶은 곳인지 확인</span>' : ""}`;
+                else if (ro && ro.exclude && ro.exclude(x)) why = "⛔ 학교장 추천이 필요한 전형 (추천 선택에서 '받음'으로 체크하면 포함)";
+                else if (!x.csat.pass) why = `⚠️ 지금 모의고사로는 수능최저 미달 (${escapeHtmlDD(x.csat.desc || "")})`;
+                else if (x.prob < 35) why = `⚠️ 적합도 ${x.prob} — 성적으로는 합격 가능성이 매우 낮아 자동으로 넣지 않음`;
+                else why = `적합도 ${x.prob} — 한 대학 1장 규칙이나 희망 카드 ${HOPE_MAX}장 한도로 빠짐`;
+                return `<li>${nm}: ${why}</li>`;
+            });
+            out.innerHTML = order + (rows.length ? `<ul style="margin:4px 0 0 16px; padding:0; color:#cbd5e1;">${rows.join("")}</ul>` : ` <span style="color:#fbbf24;">지금 고른 계열·자료에 맞는 모집단위가 없습니다 — 학과 이름을 줄여 보세요(예: 정치외교학과 → 정치외교).</span>`);
+        }
         function renderRecScenarios(evalList, st) {
+            renderHopeBar(evalList, st);
             renderRecBar(evalList, st);
             const box = document.getElementById("rec-scenario-box");
             if (!box) return;
@@ -5819,7 +5905,7 @@
                 return `
                 <div class="card-slot slot-${item.tier} c2" data-key="${escapeHtmlDD(item.univ + "::" + item.dept)}" style="--i:${idx};">
                     <div>
-                        <div class="c2-top"><span class="c2-no">${idx + 1}</span>${heroTier(item.tier)}<span class="c2-type">${REC_CFG.applied && ["S", "Y", "K"].some(k => REC_IS[k](item)) ? "🎫 " : ""}${escapeHtmlDD(item.type)}</span></div>
+                        <div class="c2-top"><span class="c2-no">${idx + 1}</span>${heroTier(item.tier)}<span class="c2-type">${item.hopePick ? "⭐ " : ""}${REC_CFG.applied && ["S", "Y", "K"].some(k => REC_IS[k](item)) ? "🎫 " : ""}${escapeHtmlDD(item.type)}</span></div>
                         <div class="card-univ-title">${item.univ}</div>
                         ${item.bundleUniv ? `<div class="c2-line" style="font-size:11px; color:#94a3b8;">같은 합격선 묶음: ${escapeHtmlDD(item.bundleOthers.join("·"))} — 대학별 컷 자료가 없어 대표 1곳만 표시(다른 카드와 겹치지 않는 대학 우선)</div>` : ""}
                         <div class="card-dept-name">${item.dept}${curBadge(item, "susi")}</div>
